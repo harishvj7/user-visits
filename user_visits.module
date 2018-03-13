@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * User visits - displays a list of users who recently visited any other user's
+ * profile, along with the time of the last visit and the image.
+ */
+
+use Drupal\user\UserInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+
+
+/**
+ * Implements hook_help().
+ */
+  function user_visits_help($path, $arg) {
+  switch ($path) {
+    case "entity.user.canonical":
+      return t("<p>Counts the visits to a user's profile.</p>");
+  }
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function user_visits_user_view(&$build, UserInterface $account, EntityViewDisplayInterface $display) {
+  $profile_page_setting = \Drupal::config('user_visits.settings')->get('user_visits_display');
+  $user = \Drupal::currentUser();
+	$current_path = \Drupal::service('path.current')->getPath();
+	$path_args = explode('/', $current_path);
+  if ($profile_page_setting) {
+    $visitors = user_visits_latest($account->id());
+    if (is_array($visitors)) {
+      foreach ($visitors as $visitor) {
+        $user_account = user_load($visitor->vuid);
+        $time = date(DATE_RFC3339,$visitor->visit);
+        $output[] = array(
+          'account' => $user_account->getUsername(),
+          'timestamp' => $time,
+          'referer' => $visitor->referer,
+        );
+      }
+    }
+    $build['user_visits'] = array(
+      '#theme' => 'user_visits',
+      '#list2' => $output,
+    );
+    $build['#cache']['max-age'] = 0;
+    return $build;
+  }
+}
+
+/**
+ * Get the latest visits.
+ */
+function user_visits_latest($uid, $limit = 5) {
+  $visitors = array();
+  $query = db_select('user_visits', 'uv')
+      ->fields('uv')
+      ->condition('uv.uid', $uid)
+      ->orderBy('uv.visit', 'DESC')
+      ->range(0, $limit);
+  $results = $query->execute();
+  foreach ($results as $record) {
+    $visitors[] = $record;
+  }
+  return $visitors;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function user_visits_theme($existing, $type, $theme, $path) {
+  return array(
+    'user_visits' => array(
+      'variables' => array(
+        'list1'   => NULL,
+        'list2'   => NULL,
+
+      ),
+    ),
+    'user_visits_total' => array(
+      'variables' => array(
+        'total'   => NULL,
+      ),
+    ),
+  );
+}

@@ -1,0 +1,5 @@
+services:
+  user_visits.service1:
+    class: Drupal\user_visits\EventSubscriber\UserVisitsExit
+    tags:
+      - { name: event_subscriber }
