@@ -1,7 +1,0 @@
-user_visits.settings:
-  path: '/admin/structure/user_visits/settings'
-  defaults:
-    _form: '\Drupal\user_visits\Form\UserVisitsSettingsForm'
-    _title: 'User visits'
-  requirements:
-    _permission: 'administer user_visits'
