@@ -1,0 +1,4 @@
+administer user_visits:
+  title: 'Administer content'
+  description: 'Promote, change ownership, edit revisions, and perform other tasks across all.'
+  restrict access: true

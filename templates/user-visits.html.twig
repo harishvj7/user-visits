@@ -1,0 +1,18 @@
+{% if list1 is defined %}
+	{% for users in list1 %}
+    <div><a href="{{users.referer}}">{{ users.vuid }}</a></li></div>
+    <div>{{ users.visit }}</div>
+  {% endfor %}
+{% if list1.total is defined %}  
+<div>Total visits {{list1.total}}</div>
+{% endif %}
+{% endif %}
+
+{% if list2 is defined %}
+<ul>
+	{% for user in list2 %}
+    <li><a href="{{user.referer}}">{{ user.account }}</a></li>
+    <li>{{ user.timestamp }}</li>
+  {% endfor %}
+</ul>
+{% endif %}

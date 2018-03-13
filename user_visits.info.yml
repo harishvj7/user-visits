@@ -1,0 +1,8 @@
+name: User Visits
+type: module
+description: Shows who has visited a user's profile lately.
+core: 8.x
+package: custom
+dependencies:
+  - block
+configure: user_visits.settings
